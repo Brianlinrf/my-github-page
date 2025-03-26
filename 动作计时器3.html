@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动作计时器</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            margin: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .exercise {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .exercise img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .timer {
+            font-size: 2em;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pause {
+            background-color: #FFA500;
+            color: white;
+        }
+
+        .reset {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .reference {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        .reference a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .reference a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动作计时器</h1>
+        
+        <div class="exercise">
+            <h2>动作一</h2>
+            <img src="https://huozhe.win/time/1.gif" alt="Image 1">
+            <div class="timer" id="timer1">04:00</div>
+            <div class="controls">
+                <button class="start" onclick="startTimer(1)">开始</button>
+                <button class="pause" onclick="pauseTimer(1)">暂停</button>
+                <button class="reset" onclick="resetTimer(1)">重置</button>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <h2>动作二</h2>
+            <img src="https://huozhe.win/time/2.gif" alt="Image 2">
+            <div class="timer" id="timer2">04:00</div>
+            <div class="controls">
+                <button class="start" onclick="startTimer(2)">开始</button>
+                <button class="pause" onclick="pauseTimer(2)">暂停</button>
+                <button class="reset" onclick="resetTimer(2)">重置</button>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <h2>动作三</h2>
+            <img src="https://huozhe.win/time/3.gif" alt="Image 3">
+            <div class="timer" id="timer3">04:00</div>
+            <div class="controls">
+                <button class="start" onclick="startTimer(3)">开始</button>
+                <button class="pause" onclick="pauseTimer(3)">暂停</button>
+                <button class="reset" onclick="resetTimer(3)">重置</button>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <h2>动作四</h2>
+            <img src="https://huozhe.win/time/4.gif" alt="Image 4">
+            <div class="timer" id="timer4">04:00</div>
+            <div class="controls">
+                <button class="start" onclick="startTimer(4)">开始</button>
+                <button class="pause" onclick="pauseTimer(4)">暂停</button>
+                <button class="reset" onclick="resetTimer(4)">重置</button>
+            </div>
+        </div>
+    </div>
+    <div class="reference">
+        参考文献：<a href="https://mp.weixin.qq.com/s/cNpTiP3-CZ9i2W3sc9rTFQ">https://mp.weixin.qq.com/s/cNpTiP3-CZ9i2W3sc9rTFQ</a>
+    </div>
+    <script>
+        const timers = {
+            1: { time: 240, interval: null, isRunning: false },
+            2: { time: 240, interval: null, isRunning: false },
+            3: { time: 240, interval: null, isRunning: false },
+            4: { time: 240, interval: null, isRunning: false }
+        };
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimer(timerId) {
+            const timer = timers[timerId];
+            if (timer.time > 0) {
+                document.getElementById(`timer${timerId}`).textContent = formatTime(timer.time);
+                timer.time--;
+            } else {
+                clearInterval(timer.interval);
+                timer.isRunning = false;
+            }
+        }
+
+        function startTimer(timerId) {
+            const timer = timers[timerId];
+            if (!timer.isRunning) {
+                timer.isRunning = true;
+                timer.interval = setInterval(() => updateTimer(timerId), 1000);
+            }
+        }
+
+        function pauseTimer(timerId) {
+            const timer = timers[timerId];
+            if (timer.isRunning) {
+                clearInterval(timer.interval);
+                timer.isRunning = false;
+            }
+        }
+
+        function resetTimer(timerId) {
+            const timer = timers[timerId];
+            clearInterval(timer.interval);
+            timer.time = 240;
+            timer.isRunning = false;
+            document.getElementById(`timer${timerId}`).textContent = formatTime(timer.time);
+        }
+    </script>
+</body>
+</html>
